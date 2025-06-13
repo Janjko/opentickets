@@ -2,7 +2,6 @@ tickets:
   - name: Vrijednosna karta
     type: prepaid_card
     image_url: https://www.zet.hr/UserDocsImages/Usluge/vrijednosna%20karta.jpg
-    overpass_wizard: network:wikidata=Q136060 in Croatia
     aquire:
       - &shop
         type: shop
@@ -20,61 +19,84 @@ tickets:
             value: ticket
           - key: operator:wikidata
             value: Q136060
-    fares:
-      - duration: 30min
+    entitlements:
+      - type: public_transport_ticket
+        duration: 30min
         multiuser: true
         price: "€0.53"
         traversed_zones: 1
-      - duration: 60min
+        public_transport_network_osm_tags: &zet_public_transport_network_osm_tags
+          - key: network:wikidata
+            value: Q136060
+          - key: route
+            value: tram
+          - key: route
+            value: bus
+      - type: public_transport_ticket
+        duration: 60min
         multiuser: true
         price: "€0.93"
         traversed_zones: 1
-      - duration: 90min
+        public_transport_network_osm_tags: *zet_public_transport_network_osm_tags
+      - type: public_transport_ticket
+        duration: 90min
         multiuser: true
         price: "€1.33"
         traversed_zones: 2
-      - duration: 1day
+        public_transport_network_osm_tags: *zet_public_transport_network_osm_tags
+      - type: public_transport_ticket
+        duration: 1day
         multiuser: true
         price: "€3.98"
+        traversed_zones: 1
+        public_transport_network_osm_tags: *zet_public_transport_network_osm_tags
+    validate:
+      type: in_vehicle
+    receipt:
+      type: prepaid_card
+      
+  - name: Papirnata karta 30 minuta
+    type: paper_ticket
+    image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
+    aquire:
+      - *shop
+      - *ticket_shop
+    entitlements:
+      - type: public_transport_ticket
+        duration: 30min
+        price: "€0.53"
+        traversed_zones: 1
+        public_transport_network_osm_tags: *zet_public_transport_network_osm_tags
+
+  - name: Papirnata karta 60 minuta
+    type: paper_ticket
+    image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
+    aquire:
+      - *shop
+      - *ticket_shop
+    entitlements:
+      - type: public_transport_ticket
+        duration: 60min
+        price: "€0.93"
         traversed_zones: 1
     validate:
       type: in_vehicle
     receipt:
-      type: card
-  - name: Papirnata karta 30 minuta
-    type: paper_ticket
-    image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
-    overpass_wizard: network:wikidata=Q136060 in Croatia
-    aquire:
-      - *shop
-      - *ticket_shop
-    fares:
-      - duration: 30min
-        price: "€0.53"
-        traversed_zones: 1
-
-  - name: Papirnata karta 60 minuta
-    payement_type: paper_ticket
-    image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
-    multiuser: true
-    overpass_wizard: network:wikidata=Q136060 in Croatia
-    fares:
-      - duration: 60min
-        price: "€0.93"
-        traversed_zones: 1
-    aquire:
-      - *shop
-      - *ticket_shop
+      type: paper_ticket
 
   - name: Papirnata karta 90 minuta
-    payement_type: paper_ticket
+    type: paper_ticket
     image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
-    multiuser: true
-    overpass_wizard: network:wikidata=Q136060 in Croatia
-    fares:
-      - duration: 90min
-        price: "€1.33"
-        traversed_zones: 1
     aquire:
       - *shop
       - *ticket_shop
+    entitlements:
+      - type: public_transport_ticket
+        duration: 90min
+        price: "€1.33"
+        traversed_zones: 1
+        public_transport_network_osm_tags: *zet_public_transport_network_osm_tags
+    validate:
+      type: in_vehicle
+    receipt:
+      type: paper_ticket
