@@ -1,0 +1,80 @@
+tickets:
+  - name: Vrijednosna karta
+    type: prepaid_card
+    image_url: https://www.zet.hr/UserDocsImages/Usluge/vrijednosna%20karta.jpg
+    overpass_wizard: network:wikidata=Q136060 in Croatia
+    aquire:
+      - &shop
+        type: shop
+        name: "Tisak"
+        osm_tags:
+          - key: shop
+            value: kiosk
+          - key: operator:wikidata
+            value: Q12643627
+      - &ticket_shop
+        type: ticket_shop
+        name: "Prodajna mjesta ZET-a"
+        osm_tags:
+          - key: shop
+            value: ticket
+          - key: operator:wikidata
+            value: Q136060
+    fares:
+      - duration: 30min
+        multiuser: true
+        price: "€0.53"
+        traversed_zones: 1
+      - duration: 60min
+        multiuser: true
+        price: "€0.93"
+        traversed_zones: 1
+      - duration: 90min
+        multiuser: true
+        price: "€1.33"
+        traversed_zones: 2
+      - duration: 1day
+        multiuser: true
+        price: "€3.98"
+        traversed_zones: 1
+    validate:
+      type: in_vehicle
+    receipt:
+      type: card
+  - name: Papirnata karta 30 minuta
+    type: paper_ticket
+    image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
+    overpass_wizard: network:wikidata=Q136060 in Croatia
+    aquire:
+      - *shop
+      - *ticket_shop
+    fares:
+      - duration: 30min
+        price: "€0.53"
+        traversed_zones: 1
+
+  - name: Papirnata karta 60 minuta
+    payement_type: paper_ticket
+    image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
+    multiuser: true
+    overpass_wizard: network:wikidata=Q136060 in Croatia
+    fares:
+      - duration: 60min
+        price: "€0.93"
+        traversed_zones: 1
+    aquire:
+      - *shop
+      - *ticket_shop
+
+  - name: Papirnata karta 90 minuta
+    payement_type: paper_ticket
+    image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
+    multiuser: true
+    overpass_wizard: network:wikidata=Q136060 in Croatia
+    fares:
+      - duration: 90min
+        price: "€1.33"
+        traversed_zones: 1
+    aquire:
+      - *shop
+      - *ticket_shop
