@@ -20,36 +20,36 @@ tickets:
           - key: operator:wikidata
             value: Q136060
     entitlements:
-      - type: public_transport_ticket
+      - type: public_transport
         duration: 30min
         multiuser: true
         price: "€0.53"
         traversed_zones: 1
-        public_transport_network_osm_tags: &zet_public_transport_network_osm_tags
+        osm_tags: &zet_public_transport_network_osm_tags
           - key: network:wikidata
             value: Q136060
           - key: route
             value: tram
           - key: route
             value: bus
-      - type: public_transport_ticket
+      - type: public_transport
         duration: 60min
         multiuser: true
         price: "€0.93"
         traversed_zones: 1
-        public_transport_network_osm_tags: *zet_public_transport_network_osm_tags
-      - type: public_transport_ticket
+        osm_tags: *zet_public_transport_network_osm_tags
+      - type: public_transport
         duration: 90min
         multiuser: true
         price: "€1.33"
         traversed_zones: 2
-        public_transport_network_osm_tags: *zet_public_transport_network_osm_tags
-      - type: public_transport_ticket
+        osm_tags: *zet_public_transport_network_osm_tags
+      - type: public_transport
         duration: 1day
         multiuser: true
         price: "€3.98"
         traversed_zones: 1
-        public_transport_network_osm_tags: *zet_public_transport_network_osm_tags
+        osm_tags: *zet_public_transport_network_osm_tags
     validate:
       type: in_vehicle
     receipt:
@@ -62,11 +62,11 @@ tickets:
       - *shop
       - *ticket_shop
     entitlements:
-      - type: public_transport_ticket
+      - type: public_transport
         duration: 30min
         price: "€0.53"
         traversed_zones: 1
-        public_transport_network_osm_tags: *zet_public_transport_network_osm_tags
+        osm_tags: *zet_public_transport_network_osm_tags
 
   - name: Papirnata karta 60 minuta
     type: paper_ticket
@@ -75,7 +75,7 @@ tickets:
       - *shop
       - *ticket_shop
     entitlements:
-      - type: public_transport_ticket
+      - type: public_transport
         duration: 60min
         price: "€0.93"
         traversed_zones: 1
@@ -91,11 +91,11 @@ tickets:
       - *shop
       - *ticket_shop
     entitlements:
-      - type: public_transport_ticket
+      - type: public_transport
         duration: 90min
         price: "€1.33"
         traversed_zones: 1
-        public_transport_network_osm_tags: *zet_public_transport_network_osm_tags
+        osm_tags: *zet_public_transport_network_osm_tags
     validate:
       type: in_vehicle
     receipt:
