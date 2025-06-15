@@ -28,10 +28,6 @@ tickets:
         osm_tags: &zet_public_transport_network_osm_tags
           - key: network:wikidata
             value: Q136060
-          - key: route
-            value: tram
-          - key: route
-            value: bus
       - type: public_transport
         duration: 60min
         multiuser: true
