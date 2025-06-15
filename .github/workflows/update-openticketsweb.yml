@@ -1,0 +1,43 @@
+name: Update openticketsweb data
+
+on:
+  workflow_dispatch:  # Manually triggered
+  push:
+    branches: [ main ]  # Or your default branch
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout opentickets repo (this repo)
+      uses: actions/checkout@v4
+
+    - name: Checkout openticketsweb repo
+      uses: actions/checkout@v4
+      with:
+        repository: yourusername/openticketsweb  # change to your actual repo path
+        path: openticketsweb
+        token: ${{ secrets.PAT_TOKEN }}  # needs repo write permission
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Run script to generate data
+      run: |
+        python process_data.py --output-dir openticketsweb/data
+
+    - name: Commit and push changes to openticketsweb
+      run: |
+        cd openticketsweb
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git add .
+        git commit -m "Update data from opentickets" || echo "No changes to commit"
+        git push
