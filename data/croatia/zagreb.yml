@@ -25,6 +25,7 @@ tickets:
         multiuser: true
         price: "€0.53"
         traversed_zones: 1
+        region: Croatia
         osm_tags: &zet_public_transport_network_osm_tags
           - key: network:wikidata
             value: Q136060
@@ -33,18 +34,21 @@ tickets:
         multiuser: true
         price: "€0.93"
         traversed_zones: 1
+        region: Croatia
         osm_tags: *zet_public_transport_network_osm_tags
       - type: public_transport
         duration: 90min
         multiuser: true
         price: "€1.33"
         traversed_zones: 2
+        region: Croatia
         osm_tags: *zet_public_transport_network_osm_tags
       - type: public_transport
         duration: 1day
         multiuser: true
         price: "€3.98"
         traversed_zones: 1
+        region: Croatia
         osm_tags: *zet_public_transport_network_osm_tags
     validate:
       type: in_vehicle
@@ -62,6 +66,7 @@ tickets:
         duration: 30min
         price: "€0.53"
         traversed_zones: 1
+        region: Croatia
         osm_tags: *zet_public_transport_network_osm_tags
 
   - name: Papirnata karta 60 minuta
@@ -75,6 +80,8 @@ tickets:
         duration: 60min
         price: "€0.93"
         traversed_zones: 1
+        region: Croatia
+        osm_tags: *zet_public_transport_network_osm_tags
     validate:
       type: in_vehicle
     receipt:
@@ -91,6 +98,7 @@ tickets:
         duration: 90min
         price: "€1.33"
         traversed_zones: 1
+        region: Croatia
         osm_tags: *zet_public_transport_network_osm_tags
     validate:
       type: in_vehicle
