@@ -16,7 +16,7 @@ jobs:
     - name: Checkout openticketsweb repo
       uses: actions/checkout@v4
       with:
-        repository: yourusername/openticketsweb  # change to your actual repo path
+        repository: Janjko/openticketsweb  # change to your actual repo path
         path: openticketsweb
         token: ${{ secrets.PAT_TOKEN }}  # needs repo write permission
 
