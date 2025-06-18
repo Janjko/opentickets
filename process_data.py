@@ -3,6 +3,9 @@ import yaml
 from pathlib import Path
 from collections import defaultdict
 import urllib.parse
+import requests
+import json
+from osm2geojson import json2geojson
 
 def generate_osm_key(tag_list):
     """Converts a list of {'key': ..., 'value': ...} dicts into a sorted tuple of key-value pairs."""
@@ -14,13 +17,31 @@ def build_overpass_query(tags):
     tag_query = "".join(f'["{tag["key"]}"="{tag["value"]}"]' for tag in tags)
     
     # Full Overpass QL query
-    query = f'[out:json][timeout:25];node{tag_query};out geom;'
+    query = f'[out:json][timeout:25];{{geocodeArea:Croatia}}->.searchArea;nwr{tag_query}(area.searchArea);out geom;'
 
     # URL-encode and insert into full Overpass API URL
     encoded_query = urllib.parse.quote(query)
     full_url = f'https://overpass-api.de/api/interpreter?data={encoded_query}'
 
     return full_url
+
+def download_and_save_geojson(name, query_url, folder):
+    try:
+        print(f"Downloading: {name}")
+        response = requests.get(query_url)
+        response.raise_for_status()
+        overpass_data = response.json()
+
+        geojson = json2geojson(overpass_data)
+
+        os.makedirs(folder, exist_ok=True)
+        filepath = os.path.join(folder, f"{name}.geojson")
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(geojson, f, ensure_ascii=False, indent=2)
+        print(f"Saved to {filepath}")
+
+    except Exception as e:
+        print(f"Failed to fetch/convert {name}: {e}")
 
 def find_yml_files(root_folder):
     return list(Path(root_folder).rglob("*.yml"))
@@ -43,12 +64,15 @@ for yml_file in find_yml_files('./data'):
                 tags = aquire.get('osm_tags')
                 if tags:
                     key = generate_osm_key(tags)
+                    name = "_".join(f"{k}-{v}" for k, v in key)
+                    query_url = build_overpass_query(tags)
                     aquire_dict[key] = {
                         'name': aquire.get('name'),
                         'type': aquire.get('type'),
                         'region': aquire.get('region'),
-                        'overpass_query': build_overpass_query(tags)
+                        'overpass_query': query_url
                     }
+                download_and_save_geojson(name, query_url, "./geojson/aquire")
 
             # Process 'entitlements' section
             for ent in ticket.get('entitlements', []):
