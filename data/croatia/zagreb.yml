@@ -9,7 +9,7 @@ tickets:
         osm_tags:
           - key: shop
             value: kiosk
-          - key: operator:wikidata
+          - key: brand:wikidata
             value: Q12643627
       - &ticket_shop
         type: ticket_shop

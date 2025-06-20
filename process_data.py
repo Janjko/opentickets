@@ -15,9 +15,9 @@ def build_overpass_query(tags):
     """Build Overpass 'and' query from tag list and return a full URL-encoded Overpass API URL."""
     # Build the inner part of the Overpass query (e.g., node["key"="value"]["key2"="value2"];)
     tag_query = "".join(f'["{tag["key"]}"="{tag["value"]}"]' for tag in tags)
-    
+    area_id = get_area_id_from_nominatim("Croatia")
     # Full Overpass QL query
-    query = f'[out:json][timeout:25];{{geocodeArea:Croatia}}->.searchArea;nwr{tag_query}(area.searchArea);out geom;'
+    query = f'[out:json][timeout:25];area(id:{area_id})->.searchArea;nwr{tag_query}(area.searchArea);out geom;'
 
     # URL-encode and insert into full Overpass API URL
     encoded_query = urllib.parse.quote(query)
@@ -42,6 +42,32 @@ def download_and_save_geojson(name, query_url, folder):
 
     except Exception as e:
         print(f"Failed to fetch/convert {name}: {e}")
+def get_area_id_from_nominatim(query):
+    url = "https://nominatim.openstreetmap.org/search"
+    params = {
+        "q": query,
+        "format": "json",
+        "limit": 1
+    }
+    headers = {"User-Agent": "OpenTicketsBot/1.0"}  # Required by Nominatim usage policy
+    response = requests.get(url, params=params, headers=headers)
+    data = response.json()
+
+    if not data:
+        raise ValueError("Location not found")
+
+    osm_type = data[0]["osm_type"]
+    osm_id = int(data[0]["osm_id"])
+
+    if osm_type == "relation":
+        return 3600000000 + osm_id
+    elif osm_type == "way":
+        return 2400000000 + osm_id
+    elif osm_type == "node":
+        return 1600000000 + osm_id
+    else:
+        raise ValueError("Unknown OSM type")
+
 
 def find_yml_files(root_folder):
     return list(Path(root_folder).rglob("*.yml"))
