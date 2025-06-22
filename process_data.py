@@ -25,7 +25,7 @@ def build_overpass_query(tags):
 
     return full_url
 
-def download_and_save_geojson(name, query_url, folder):
+def download_and_save_geojson(name, query_url, folder, filename):
     try:
         print(f"Downloading: {name}")
         response = requests.get(query_url)
@@ -35,7 +35,7 @@ def download_and_save_geojson(name, query_url, folder):
         geojson = json2geojson(overpass_data)
 
         os.makedirs(folder, exist_ok=True)
-        filepath = os.path.join(folder, f"{name}.geojson")
+        filepath = os.path.join(folder, f"{filename}.geojson")
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(geojson, f, ensure_ascii=False, indent=2)
         print(f"Saved to {filepath}")
@@ -90,6 +90,8 @@ for yml_file in find_yml_files('./data'):
                 tags = aquire.get('osm_tags')
                 if tags:
                     key = generate_osm_key(tags)
+                    if key in aquire_dict:
+                        continue
                     name = "_".join(f"{k}-{v}" for k, v in key)
                     query_url = build_overpass_query(tags)
                     aquire_dict[key] = {
@@ -98,17 +100,24 @@ for yml_file in find_yml_files('./data'):
                         'region': aquire.get('region'),
                         'overpass_query': query_url
                     }
-                download_and_save_geojson(name, query_url, "./geojson/aquire")
+                safe_name = name.replace(":", "_")
+                download_and_save_geojson(name, query_url, "./geojson/aquire", safe_name)
 
             # Process 'entitlements' section
             for ent in ticket.get('entitlements', []):
                 tags = ent.get('osm_tags')
                 if tags:
                     key = generate_osm_key(tags)
+                    name = "_".join(f"{k}-{v}" for k, v in key)
+                    if key in entitlements_dict:
+                        continue
+                    query_url = build_overpass_query(tags)
                     entitlements_dict[key] = {
                         'type': ent.get('type'),
-                        'overpass_query': build_overpass_query(tags)
+                        'overpass_query': query_url
                     }
+                safe_name = name.replace(":", "_")
+                download_and_save_geojson(name, query_url, "./geojson/entitlements", safe_name)
 
 # Example output
 print("\n--- Aquire Locations ---")
