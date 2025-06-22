@@ -101,7 +101,7 @@ for yml_file in find_yml_files('./data'):
                         'overpass_query': query_url
                     }
                 safe_name = name.replace(":", "_")
-                download_and_save_geojson(name, query_url, "./geojson/aquire", safe_name)
+                download_and_save_geojson(name, query_url, "./openticketsweb/data/aquire", safe_name)
 
             # Process 'entitlements' section
             for ent in ticket.get('entitlements', []):
@@ -117,7 +117,7 @@ for yml_file in find_yml_files('./data'):
                         'overpass_query': query_url
                     }
                 safe_name = name.replace(":", "_")
-                download_and_save_geojson(name, query_url, "./geojson/entitlements", safe_name)
+                download_and_save_geojson(name, query_url, "./openticketsweb/data/entitlements", safe_name)
 
 # Example output
 print("\n--- Aquire Locations ---")
