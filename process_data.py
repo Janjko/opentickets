@@ -165,5 +165,5 @@ for key, props in entitlements_dict.items():
 collection = geojson.FeatureCollection(features)
 
 # Write to file
-with open('./data/entitlements.geojson', 'w', encoding='utf-8') as f:
+with open('./openticketsweb/data/entitlements.geojson', 'w', encoding='utf-8') as f:
     geojson.dump(collection, f, indent=2)
