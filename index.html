@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Entitlements Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+  <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
+  <style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: row;
+}
+
+#map {
+  width: 66.66%;
+  height: 100%;
+}
+
+#sidebar {
+  width: 33.33%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 1em;
+  background: #f8f8f8;
+  border-left: 1px solid #ccc;
+}
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="sidebar">
+    <h2>Entitlements</h2>
+    <p>Click a point on the map to show details.</p>
+    <img id="entitlement-svg" src="data/entitlements.svg" alt="Entitlement SVG">
+    <button onclick="resetMap()">🔙 Show All Pins</button>
+  </div>
+
+  <script>
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: 'https://demotiles.maplibre.org/style.json',
+      center: [16.0, 45.8],
+      zoom: 7
+    });
+
+    map.on('load', () => {
+      // Add point pins for entitlements
+      map.addSource('entitlement-pins', {
+        type: 'geojson',
+        data: 'data/entitlements.geojson'
+      });
+
+      map.addLayer({
+        id: 'entitlement-pins',
+        type: 'circle',
+        source: 'entitlement-pins',
+        paint: {
+          'circle-radius': 6,
+          'circle-color': '#ff5500'
+        }
+      });
+
+      map.on('click', 'entitlement-pins', (e) => {
+        const feature = e.features[0];
+        const name = feature.properties.name;
+        const shapePath = `data/entitlements/${name}.geojson`;
+        const svgPath = `data/entitlements/${name}.svg`;
+
+        console.log(`Loading: ${shapePath}`);
+
+        // Hide pins layer
+        map.setLayoutProperty('entitlement-pins', 'visibility', 'none');
+
+        // Fetch and show the polygon shape
+        fetch(shapePath)
+          .then(res => res.json())
+          .then(data => {
+            if (map.getSource('entitlement-shape')) {
+              map.getSource('entitlement-shape').setData(data);
+            } else {
+              map.addSource('entitlement-shape', {
+                type: 'geojson',
+                data: data
+              });
+              map.addLayer({
+                id: 'entitlement-shape',
+                type: 'fill',
+                source: 'entitlement-shape',
+                paint: {
+                  'fill-color': '#2288ff',
+                  'fill-opacity': 0.4
+                }
+              });
+            }
+
+            // Zoom to bounds
+            const coords = data.features.flatMap(f =>
+              f.geometry.type === 'Polygon' ? f.geometry.coordinates[0] : f.geometry.coordinates.flat(1)
+            );
+            const bounds = coords.reduce((b, coord) => b.extend(coord), new maplibregl.LngLatBounds(coords[0], coords[0]));
+            map.fitBounds(bounds, { padding: 30 });
+
+            // Replace SVG in sidebar
+            const svgEl = document.getElementById('entitlement-svg');
+            svgEl.onerror = () => {
+              svgEl.src = 'data/entitlements.svg'; // fallback to default
+            };
+            svgEl.src = svgPath;
+          });
+      });
+
+      map.on('mouseenter', 'entitlement-pins', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'entitlement-pins', () => {
+        map.getCanvas().style.cursor = '';
+      });
+    });
+
+    function resetMap() {
+      if (map.getLayer('entitlement-shape')) {
+        map.removeLayer('entitlement-shape');
+      }
+      if (map.getSource('entitlement-shape')) {
+        map.removeSource('entitlement-shape');
+      }
+
+      // Show pins again
+      map.setLayoutProperty('entitlement-pins', 'visibility', 'visible');
+
+      // Reset SVG
+      document.getElementById('entitlement-svg').src = 'data/entitlements.svg';
+    }
+  </script>
+</body>
+</html>

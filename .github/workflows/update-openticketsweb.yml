@@ -32,6 +32,10 @@ jobs:
     - name: Run script to generate data
       run: |
         python process_data.py --output-dir openticketsweb/data
+    
+    - name: Copy map site files to openticketsweb
+      run: |
+        cp index.html openticketsweb/
 
     - name: Commit and push changes to openticketsweb
       run: |
