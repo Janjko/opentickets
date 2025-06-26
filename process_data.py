@@ -5,7 +5,9 @@ from collections import defaultdict
 import urllib.parse
 import requests
 import json
+import geojson
 from osm2geojson import json2geojson
+from shapely.geometry import shape, GeometryCollection
 
 def generate_osm_key(tag_list):
     """Converts a list of {'key': ..., 'value': ...} dicts into a sorted tuple of key-value pairs."""
@@ -25,7 +27,7 @@ def build_overpass_query(tags):
 
     return full_url
 
-def download_and_save_geojson(name, query_url, folder, filename):
+def download_and_save_geojson(name, query_url, folder):
     try:
         print(f"Downloading: {name}")
         response = requests.get(query_url)
@@ -34,14 +36,28 @@ def download_and_save_geojson(name, query_url, folder, filename):
 
         geojson = json2geojson(overpass_data)
 
+        # Save the file
         os.makedirs(folder, exist_ok=True)
-        filepath = os.path.join(folder, f"{filename}.geojson")
+        filepath = os.path.join(folder, f"{name}.geojson")
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(geojson, f, ensure_ascii=False, indent=2)
         print(f"Saved to {filepath}")
 
+        # --- Compute centroid ---
+        geometries = [shape(feat['geometry']) for feat in geojson['features']]
+        if not geometries:
+            print(f"No geometries found for {name}")
+            return None
+
+        # Combine all geometries into one collection and get its centroid
+        collection = GeometryCollection(geometries)
+        centroid = collection.centroid
+        return [centroid.x, centroid.y]
+
     except Exception as e:
         print(f"Failed to fetch/convert {name}: {e}")
+        return None
+
 def get_area_id_from_nominatim(query):
     url = "https://nominatim.openstreetmap.org/search"
     params = {
@@ -92,38 +108,62 @@ for yml_file in find_yml_files('./data'):
                     key = generate_osm_key(tags)
                     if key in aquire_dict:
                         continue
-                    name = "_".join(f"{k}-{v}" for k, v in key)
+                    name = "_".join(f"{k}-{v}" for k, v in key).replace(":", "_")
                     query_url = build_overpass_query(tags)
+                    centroid = download_and_save_geojson(name, query_url, "./openticketsweb/data/aquire")
                     aquire_dict[key] = {
                         'name': aquire.get('name'),
                         'type': aquire.get('type'),
                         'region': aquire.get('region'),
-                        'overpass_query': query_url
+                        'overpass_query': query_url,
+                        'centroid': centroid,
                     }
-                safe_name = name.replace(":", "_")
-                download_and_save_geojson(name, query_url, "./openticketsweb/data/aquire", safe_name)
+                    
 
             # Process 'entitlements' section
             for ent in ticket.get('entitlements', []):
                 tags = ent.get('osm_tags')
                 if tags:
                     key = generate_osm_key(tags)
-                    name = "_".join(f"{k}-{v}" for k, v in key)
+                    name = "_".join(f"{k}-{v}" for k, v in key).replace(":", "_")
                     if key in entitlements_dict:
                         continue
                     query_url = build_overpass_query(tags)
+                    centroid = download_and_save_geojson(name, query_url, "./openticketsweb/data/entitlements")
                     entitlements_dict[key] = {
+                        'name': name,
                         'type': ent.get('type'),
-                        'overpass_query': query_url
+                        'overpass_query': query_url,
+                        'centroid': centroid,
                     }
-                safe_name = name.replace(":", "_")
-                download_and_save_geojson(name, query_url, "./openticketsweb/data/entitlements", safe_name)
 
 # Example output
 print("\n--- Aquire Locations ---")
 for k, v in aquire_dict.items():
     print(f"{k}: {v}")
 
-print("\n--- Entitlements ---")
-for k, v in entitlements_dict.items():
-    print(f"{k}: {v}")
+features = []
+
+for key, props in entitlements_dict.items():
+    centroid = props.get('centroid')
+    name = props.get('name')
+
+    if not centroid or not name:
+        continue  # Skip invalid entries
+
+    feature = geojson.Feature(
+        geometry=geojson.Point(centroid),
+        properties={
+            "name": name,
+            "type": props.get("type"),
+            "overpass_query": props.get("overpass_query")
+        }
+    )
+    features.append(feature)
+
+# Save as a FeatureCollection
+collection = geojson.FeatureCollection(features)
+
+# Write to file
+with open('./data/entitlements.geojson', 'w', encoding='utf-8') as f:
+    geojson.dump(collection, f, indent=2)
