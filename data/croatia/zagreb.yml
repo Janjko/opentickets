@@ -50,6 +50,16 @@ tickets:
         traversed_zones: 1
         region: Croatia
         osm_tags: *zet_public_transport_network_osm_tags
+      - type: public_transport
+        multiuser: true
+        price: "€0,66"
+        region: Croatia
+        osm_tags: &zet_funicular_osm_tags
+          - key: route
+            value: funicular
+          - key: operator
+            value: ZET
+
     validate:
       type: in_vehicle
     receipt:
@@ -102,5 +112,44 @@ tickets:
         osm_tags: *zet_public_transport_network_osm_tags
     validate:
       type: in_vehicle
+    receipt:
+      type: paper_ticket
+
+  - name: Karta za uspinjaču - jednosmjerna
+    type: paper_ticket
+    image_url: https://www.crosport.hr/wp-content/uploads/2018/10/Uspinja%C4%8Da-758x380.jpg
+    aquire:
+      - &zet_funicular_stop
+        type: shop
+        name: "Stanica uspinjače"
+        osm_tags:
+          - key: operator
+            value: ZET
+          - key: funicular
+            value: yes
+          - key: public_transport
+            value: platform
+    entitlements:
+      - type: public_transport
+        price: "€0.66"
+        region: Croatia
+        osm_tags: *zet_funicular_osm_tags
+    validate:
+      type: before_entrance
+    receipt:
+      type: paper_ticket
+
+  - name: Karta za hitnu vožnju
+    type: paper_ticket
+    image_url: https://www.crosport.hr/wp-content/uploads/2018/10/Uspinja%C4%8Da-758x380.jpg
+    aquire:
+      - *zet_funicular_stop
+    entitlements:
+      - type: public_transport
+        price: "€3.32"
+        region: Croatia
+        osm_tags: *zet_funicular_osm_tags
+    validate:
+      type: before_entrance
     receipt:
       type: paper_ticket
