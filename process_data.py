@@ -100,8 +100,11 @@ for yml_file in find_yml_files('./data'):
             continue
 
         tickets = content.get('tickets', [])
+
         for ticket in tickets:
             # Process 'aquire' section
+            aquire_names = []
+
             for aquire in ticket.get('aquire', []):
                 tags = aquire.get('osm_tags')
                 if tags:
@@ -118,6 +121,8 @@ for yml_file in find_yml_files('./data'):
                         'overpass_query': query_url,
                         'centroid': centroid,
                     }
+                    if aquire.get('name'):
+                        aquire_names.append(aquire.get('name'))
                     
 
             # Process 'entitlements' section
@@ -127,7 +132,13 @@ for yml_file in find_yml_files('./data'):
                     key = generate_osm_key(tags)
                     name = "_".join(f"{k}-{v}" for k, v in key).replace(":", "_")
                     if key in entitlements_dict:
+                        # append aquire names if not already present
+                        existing = entitlements_dict[key].setdefault('aquire_names', [])
+                        for aname in aquire_names:
+                            if aname not in existing:
+                                existing.append(aname)
                         continue
+
                     query_url = build_overpass_query(tags)
                     centroid = download_and_save_geojson(name, query_url, "./openticketsweb/data/entitlements")
                     entitlements_dict[key] = {
@@ -135,6 +146,7 @@ for yml_file in find_yml_files('./data'):
                         'type': ent.get('type'),
                         'overpass_query': query_url,
                         'centroid': centroid,
+                        'aquire_names': aquire_names.copy()  # important: copy, not reference
                     }
 
 # Example output
@@ -156,7 +168,8 @@ for key, props in entitlements_dict.items():
         properties={
             "name": name,
             "type": props.get("type"),
-            "overpass_query": props.get("overpass_query")
+            "overpass_query": props.get("overpass_query"),
+            "aquire_names": props.get("aquire_names"),
         }
     )
     features.append(feature)
