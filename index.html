@@ -40,6 +40,7 @@ body {
   <div id="sidebar">
     <h2>Entitlements</h2>
     <p>Click a point on the map to show details.</p>
+    <div id="ticket-list"></div>
     <img id="entitlement-svg" src="data/entitlements.svg" alt="Entitlement SVG">
     <button onclick="resetMap()">🔙 Show All Pins</button>
   </div>
@@ -74,6 +75,21 @@ body {
         const name = feature.properties.name;
         const shapePath = `data/entitlements/${name}.geojson`;
         const svgPath = `data/entitlements/${name}.svg`;
+
+        // Show ticket names in sidebar
+        const tickets = feature.properties.ticket_names;
+        const ticketList = document.getElementById('ticket-list');
+
+        if (Array.isArray(tickets) && tickets.length > 0) {
+          ticketList.innerHTML = `
+            <h3>Tickets:</h3>
+            <table>
+              ${tickets.map(t => `<tr><td>${t}</td></tr>`).join('')}
+            </table>
+          `;
+        } else {
+          ticketList.innerHTML = `<p><i>No ticket information available.</i></p>`;
+        }
 
         console.log(`Loading: ${shapePath}`);
 
@@ -127,6 +143,7 @@ body {
     });
 
     function resetMap() {
+      document.getElementById('ticket-list').innerHTML = '';
       if (map.getLayer('entitlement-shape')) {
         map.removeLayer('entitlement-shape');
       }
