@@ -102,9 +102,11 @@ for yml_file in find_yml_files('./data'):
         tickets = content.get('tickets', [])
 
         for ticket in tickets:
-            # Process 'aquire' section
+            ticket_name = ticket.get('name')
+
             aquire_names = []
 
+            # Process 'aquire' section
             for aquire in ticket.get('aquire', []):
                 tags = aquire.get('osm_tags')
                 if tags:
@@ -137,6 +139,11 @@ for yml_file in find_yml_files('./data'):
                         for aname in aquire_names:
                             if aname not in existing:
                                 existing.append(aname)
+
+                        # add ticket name
+                        tlist = entitlements_dict[key].setdefault('ticket_names', [])
+                        if ticket_name and ticket_name not in tlist:
+                            tlist.append(ticket_name)
                         continue
 
                     query_url = build_overpass_query(tags)
@@ -146,7 +153,8 @@ for yml_file in find_yml_files('./data'):
                         'type': ent.get('type'),
                         'overpass_query': query_url,
                         'centroid': centroid,
-                        'aquire_names': aquire_names.copy()  # important: copy, not reference
+                        'aquire_names': aquire_names.copy(),
+                        'ticket_names': [ticket_name] if ticket_name else [],
                     }
 
 # Example output
@@ -170,6 +178,7 @@ for key, props in entitlements_dict.items():
             "type": props.get("type"),
             "overpass_query": props.get("overpass_query"),
             "aquire_names": props.get("aquire_names"),
+            'ticket_names': props.get("ticket_names"),
         }
     )
     features.append(feature)
