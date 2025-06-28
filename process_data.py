@@ -183,9 +183,19 @@ for key, props in entitlements_dict.items():
     )
     features.append(feature)
 
-# Save as a FeatureCollection
+for feature in features:
+    props = feature['properties']
+    
+    # Defensive fix: ensure lists are really lists
+    for key in ['ticket_names', 'aquire_names']:
+        val = props.get(key)
+        if isinstance(val, str):
+            try:
+                props[key] = json.loads(val)  # Fix from string to real list
+            except json.JSONDecodeError:
+                props[key] = []
+
 collection = geojson.FeatureCollection(features)
 
-# Write to file
 with open('./openticketsweb/data/entitlements.geojson', 'w', encoding='utf-8') as f:
-    geojson.dump(collection, f, indent=2)
+    geojson.dump(collection, f, indent=2, ensure_ascii=False)
