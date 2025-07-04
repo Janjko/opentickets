@@ -2,6 +2,7 @@ tickets:
   - name: Vrijednosna karta
     type: prepaid_card
     image_url: https://www.zet.hr/UserDocsImages/Usluge/vrijednosna%20karta.jpg
+    price: "€1.33"
     aquire:
       - &shop
         type: shop
@@ -19,46 +20,56 @@ tickets:
             value: ticket
           - key: operator:wikidata
             value: Q136060
-    entitlements:
-      - type: public_transport
-        duration: 30min
-        multiuser: true
+    tickets:
+      - type: prepaid_card_ticket
         price: "€0.53"
-        traversed_zones: 1
-        region: Croatia
-        osm_tags: &zet_public_transport_network_osm_tags
-          - key: network:wikidata
-            value: Q136060
-      - type: public_transport
-        duration: 60min
-        multiuser: true
+        entitlements:
+          - type: public_transport
+            duration: 30min
+            multiuser: true
+            traversed_zones: 1
+            region: Croatia
+            osm_tags: &zet_public_transport_network_osm_tags
+              - key: network:wikidata
+                value: Q136060
+      - type: prepaid_card_ticket
         price: "€0.93"
-        traversed_zones: 1
-        region: Croatia
-        osm_tags: *zet_public_transport_network_osm_tags
-      - type: public_transport
-        duration: 90min
-        multiuser: true
+        entitlements:
+          - type: public_transport
+            duration: 60min
+            multiuser: true
+            traversed_zones: 1
+            region: Croatia
+            osm_tags: *zet_public_transport_network_osm_tags
+      - type: prepaid_card_ticket
         price: "€1.33"
-        traversed_zones: 2
-        region: Croatia
-        osm_tags: *zet_public_transport_network_osm_tags
-      - type: public_transport
-        duration: 1day
-        multiuser: true
+        entitlements:
+          - type: public_transport
+            duration: 90min
+            multiuser: true
+            traversed_zones: 2
+            region: Croatia
+            osm_tags: *zet_public_transport_network_osm_tags
+      - type: prepaid_card_ticket
         price: "€3.98"
-        traversed_zones: 1
-        region: Croatia
-        osm_tags: *zet_public_transport_network_osm_tags
-      - type: public_transport
-        multiuser: true
+        entitlements:
+          - type: public_transport
+            duration: 1day
+            multiuser: true
+            traversed_zones: 1
+            region: Croatia
+            osm_tags: *zet_public_transport_network_osm_tags
+      - type: prepaid_card_ticket
         price: "€0,66"
-        region: Croatia
-        osm_tags: &zet_funicular_osm_tags
-          - key: route
-            value: funicular
-          - key: operator
-            value: ZET
+        entitlements:
+          - type: public_transport
+            multiuser: true
+            region: Croatia
+            osm_tags: &zet_funicular_osm_tags
+              - key: route
+                value: funicular
+              - key: operator
+                value: ZET
 
     validate:
       type: in_vehicle
@@ -67,6 +78,7 @@ tickets:
       
   - name: Papirnata karta 30 minuta
     type: paper_ticket
+    price: "€0.53"
     image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
     aquire:
       - *shop
@@ -74,13 +86,13 @@ tickets:
     entitlements:
       - type: public_transport
         duration: 30min
-        price: "€0.53"
         traversed_zones: 1
         region: Croatia
         osm_tags: *zet_public_transport_network_osm_tags
 
   - name: Papirnata karta 60 minuta
     type: paper_ticket
+    price: "€0.93"
     image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
     aquire:
       - *shop
@@ -88,7 +100,6 @@ tickets:
     entitlements:
       - type: public_transport
         duration: 60min
-        price: "€0.93"
         traversed_zones: 1
         region: Croatia
         osm_tags: *zet_public_transport_network_osm_tags
@@ -99,6 +110,7 @@ tickets:
 
   - name: Papirnata karta 90 minuta
     type: paper_ticket
+    price: "€1.33"
     image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
     aquire:
       - *shop
@@ -106,7 +118,6 @@ tickets:
     entitlements:
       - type: public_transport
         duration: 90min
-        price: "€1.33"
         traversed_zones: 1
         region: Croatia
         osm_tags: *zet_public_transport_network_osm_tags
@@ -117,6 +128,7 @@ tickets:
 
   - name: Karta za uspinjaču - jednosmjerna
     type: paper_ticket
+    price: "€0.66"
     image_url: https://www.crosport.hr/wp-content/uploads/2018/10/Uspinja%C4%8Da-758x380.jpg
     aquire:
       - &zet_funicular_stop
@@ -131,7 +143,6 @@ tickets:
             value: platform
     entitlements:
       - type: public_transport
-        price: "€0.66"
         region: Croatia
         osm_tags: *zet_funicular_osm_tags
     validate:
@@ -141,12 +152,12 @@ tickets:
 
   - name: Karta za hitnu vožnju
     type: paper_ticket
+    price: "€3.32"
     image_url: https://www.crosport.hr/wp-content/uploads/2018/10/Uspinja%C4%8Da-758x380.jpg
     aquire:
       - *zet_funicular_stop
     entitlements:
       - type: public_transport
-        price: "€3.32"
         region: Croatia
         osm_tags: *zet_funicular_osm_tags
     validate:
