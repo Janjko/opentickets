@@ -127,8 +127,16 @@ for yml_file in find_yml_files('./data'):
                         aquire_names.append(aquire.get('name'))
                     
 
-            # Process 'entitlements' section
-            for ent in ticket.get('entitlements', []):
+            entitlement_sources = []
+
+            if ticket.get('type') == 'prepaid_card':
+                for sub_ticket in ticket.get('tickets', []):
+                    entitlement_sources.extend(sub_ticket.get('entitlements', []))
+            else:
+                entitlement_sources.extend(ticket.get('entitlements', []))
+
+            # Process entitlements
+            for ent in entitlement_sources:
                 tags = ent.get('osm_tags')
                 if tags:
                     key = generate_osm_key(tags)
