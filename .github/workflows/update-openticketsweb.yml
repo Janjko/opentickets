@@ -36,6 +36,7 @@ jobs:
     - name: Copy map site files to openticketsweb
       run: |
         cp index.html openticketsweb/
+        cp -r styles openticketsweb/
 
     - name: Commit and push changes to openticketsweb
       run: |
