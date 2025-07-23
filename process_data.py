@@ -120,6 +120,25 @@ for yml_file in find_yml_files('./data'):
         tickets = content.get('tickets', [])
 
         for ticket in tickets:
+
+            aquire_names = []
+
+            # Process 'aquire' section
+            for aquire in ticket.get('aquire', []):
+                tags = aquire.get('osm_tags')
+                if tags:
+                    key = generate_osm_key(tags)
+                    if key in aquire_dict:
+                        continue
+                    name = "_".join(f"{k}-{v}" for k, v in key).replace(":", "_")
+                    aquire['id'] = name
+                    query_url = build_overpass_query(tags)
+                    file_path = os.path.join("./openticketsweb/data/aquire", f"{name}.geojson")
+                    if os.path.exists(file_path):
+                      print(f"Skipping download for {name}, file already exists")
+                    else:
+                        centroid = download_and_save_geojson(name, query_url, "./openticketsweb/data/aquire")
+
             ticket_name = ticket.get('name')
             # Generate ticket ID
             ticket_id = generate_ticket_id(str(yml_file), ticket_name)
@@ -145,25 +164,6 @@ for yml_file in find_yml_files('./data'):
                 json.dump(ticket_entry, f, indent=2, ensure_ascii=False)
             print(f"Saved ticket to {ticket_file_path}")
             tickets_json_data.append(ticket_entry)
-
-
-            aquire_names = []
-
-            # Process 'aquire' section
-            for aquire in ticket.get('aquire', []):
-                tags = aquire.get('osm_tags')
-                if tags:
-                    key = generate_osm_key(tags)
-                    if key in aquire_dict:
-                        continue
-                    name = "_".join(f"{k}-{v}" for k, v in key).replace(":", "_")
-                    aquire['id'] = name
-                    query_url = build_overpass_query(tags)
-                    file_path = os.path.join("./openticketsweb/data/aquire", f"{name}.geojson")
-                    if os.path.exists(file_path):
-                      print(f"Skipping download for {name}, file already exists")
-                    else:
-                        centroid = download_and_save_geojson(name, query_url, "./openticketsweb/data/aquire")
 
             entitlement_sources = []
 
