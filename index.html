@@ -19,27 +19,38 @@
         font-family: sans-serif;
       }
 
-      body {
-        display: flex;
-        flex-direction: row;
-      }
+.container {
+  display: flex;
+  flex-direction: row;
+}
 
-      #map {
-        width: 66.66%;
-        height: 100%;
-      }
+#sidebar {
+  flex: 20%;
+  height: 100vh;
+}
 
-      #sidebar {
-        width: 33.33%;
-        height: 100%;
-        box-sizing: border-box;
-        padding: 1em;
-        background: #f8f8f8;
-        border-left: 1px solid #ccc;
-      }
+#map {
+  flex: 80%;
+  height: 100vh;
+}
+
+/* Styles for smaller screens (e.g. phones) */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  #sidebar {
+    width: 100%;
+  }
+  #map {
+    width: 100%;
+    flex: 50vh;
+  }
+}
     </style>
   </head>
-  <body>
+<body>
+  <div class="container">
     <div id="map"></div>
     <div id="sidebar">
       <h2>Entitlements</h2>
@@ -52,7 +63,7 @@
       />
       <button onclick="resetMap()">🔙 Show All Pins</button>
     </div>
-
+</div>
     <script>
       const map = new maplibregl.Map({
         container: "map",
