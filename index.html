@@ -19,51 +19,52 @@
         font-family: sans-serif;
       }
 
-.container {
-  display: flex;
-  flex-direction: row;
-}
+      .container {
+        display: flex;
+        flex-direction: row;
+      }
 
-#sidebar {
-  flex: 20%;
-  height: 100vh;
-}
+      #sidebar {
+        flex: 30%;
+        height: 100vh;
+        overflow-y: auto;
+      }
 
-#map {
-  flex: 80%;
-  height: 100vh;
-}
+      #map {
+        flex: 70%;
+        height: 100vh;
+      }
 
-/* Styles for smaller screens (e.g. phones) */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-  }
-  #sidebar {
-    width: 100%;
-  }
-  #map {
-    width: 100%;
-    flex: 50vh;
-  }
-}
+      /* Styles for smaller screens (e.g. phones) */
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+        }
+        #sidebar {
+          width: 100%;
+        }
+        #map {
+          width: 100%;
+          flex: 50vh;
+        }
+      }
     </style>
   </head>
-<body>
-  <div class="container">
-    <div id="map"></div>
-    <div id="sidebar">
-      <h2>Entitlements</h2>
-      <p>Click a point on the map to show details.</p>
-      <div id="ticket-list"></div>
-      <img
-        id="entitlement-svg"
-        src="data/entitlements.svg"
-        alt="Entitlement SVG"
-      />
-      <button onclick="resetMap()">🔙 Show All Pins</button>
+  <body>
+    <div class="container">
+      <div id="map"></div>
+      <div id="sidebar">
+        <h2>Entitlements</h2>
+        <p>Click a point on the map to show details.</p>
+        <div id="ticket-list"></div>
+        <img
+          id="entitlement-svg"
+          src="data/entitlements.svg"
+          alt="Entitlement SVG"
+        />
+        <button onclick="resetMap()">🔙 Show All Pins</button>
+      </div>
     </div>
-</div>
     <script>
       const map = new maplibregl.Map({
         container: "map",
@@ -79,14 +80,40 @@
           data: "data/entitlements.geojson",
         });
 
+        map.loadImage("images/bus-stop.png", (error, image) => {
+          if (error) {
+            console.error("Error loading bus-stop image:", error);
+          } else {
+            map.addImage("bus-stop", image);
+            console.log("Bus-stop image loaded successfully");
+          }
+        });
+
+        map.loadImage("images/parking.png", (error, image) => {
+          if (error) {
+            console.error("Error loading parking image:", error);
+          } else {
+            map.addImage("parking", image);
+            console.log("Parking image loaded successfully");
+          }
+        });
+
         map.addLayer({
           id: "entitlement-pins",
-          type: "circle",
+          type: "symbol",
           source: "entitlement-pins",
-          paint: {
-            "circle-radius": 6,
-            "circle-color": "#ff5500",
+          layout: {
+            "icon-image": [
+              "match",
+              ["get", "type"],
+              "public_transport",
+              "bus-stop",
+              "parking",
+              "parking",
+              "default-icon",
+            ],
           },
+          paint: {},
         });
 
         map.on("click", "entitlement-pins", (e) => {
