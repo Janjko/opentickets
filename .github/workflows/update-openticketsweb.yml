@@ -38,9 +38,9 @@ jobs:
     
     - name: Convert svg to png
       run: |
-        mkdir .\openticketsweb\images
-        convert .\images\bus-stop.svg .\openticketsweb\images\bus-stop.png
-        convert .\images\parking.svg .\openticketsweb\images\parking.png
+        mkdir ./openticketsweb/images
+        convert ./images/bus-stop.svg ./openticketsweb/images/bus-stop.png
+        convert ./images/parking.svg ./openticketsweb/images/parking.png
     
     - name: Copy map site files to openticketsweb
       run: |
