@@ -33,14 +33,12 @@ jobs:
       run: |
         python process_data.py --output-dir openticketsweb/data
     
-    - name: Install ImageMagick
-      run: sudo apt-get update && sudo apt-get install -y imagemagick
-    
     - name: Convert svg to png
       run: |
+        sudo apt-get update && sudo apt-get install -y librsvg2-bin
         mkdir ./openticketsweb/images
-        convert ./images/bus-stop.svg ./openticketsweb/images/bus-stop.png
-        convert ./images/parking.svg ./openticketsweb/images/parking.png
+        rsvg-convert ./images/bus-stop.svg -o ./openticketsweb/images/bus-stop.png
+        rsvg-convert ./images/parking.svg -o ./openticketsweb/images/parking.png
     
     - name: Copy map site files to openticketsweb
       run: |
