@@ -112,13 +112,18 @@
               "parking",
               "default-icon",
             ],
+            "text-field": ["get", "name"],
+            "text-font": ["Open Sans Semibold"],
+            "text-size": 12,
+            "text-offset": [0, 1.5],
+            "icon-offset": [0, -1.5],
           },
           paint: {},
         });
 
         map.on("click", "entitlement-pins", (e) => {
           const feature = e.features[0];
-          const name = feature.properties.name;
+          const name = feature.properties.id;
           const shapePath = `data/entitlements/${name}.geojson`;
           const svgPath = `data/entitlements/${name}.svg`;
 

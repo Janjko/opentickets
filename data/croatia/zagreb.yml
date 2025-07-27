@@ -24,7 +24,9 @@ tickets:
       - type: prepaid_card_ticket
         price: "€0.53"
         entitlements:
-          - type: public_transport
+          - &zet_bus_tram
+            name: ZET bus i tramvaj
+            type: public_transport
             duration: 30min
             multiuser: true
             traversed_zones: 1
@@ -35,35 +37,26 @@ tickets:
       - type: prepaid_card_ticket
         price: "€0.93"
         entitlements:
-          - type: public_transport
+          - <<: *zet_bus_tram
             duration: 60min
-            multiuser: true
-            traversed_zones: 1
-            region: Croatia
-            osm_tags: *zet_public_transport_network_osm_tags
       - type: prepaid_card_ticket
         price: "€1.33"
         entitlements:
-          - type: public_transport
+          - <<: *zet_bus_tram
             duration: 90min
-            multiuser: true
             traversed_zones: 2
-            region: Croatia
-            osm_tags: *zet_public_transport_network_osm_tags
       - type: prepaid_card_ticket
         price: "€3.98"
         entitlements:
-          - type: public_transport
+          - <<: *zet_bus_tram
             duration: 1day
-            multiuser: true
-            traversed_zones: 1
-            region: Croatia
-            osm_tags: *zet_public_transport_network_osm_tags
       - type: prepaid_card_ticket
         price: "€0,66"
         entitlements:
-          - type: public_transport
+          - &zet_funicular
+            type: public_transport
             multiuser: true
+            name: Uspinjača
             region: Croatia
             osm_tags: &zet_funicular_osm_tags
               - key: route
@@ -84,11 +77,8 @@ tickets:
       - *shop
       - *ticket_shop
     entitlements:
-      - type: public_transport
+      - <<: *zet_bus_tram
         duration: 30min
-        traversed_zones: 1
-        region: Croatia
-        osm_tags: *zet_public_transport_network_osm_tags
 
   - name: Papirnata karta 60 minuta
     type: paper_ticket
@@ -98,11 +88,8 @@ tickets:
       - *shop
       - *ticket_shop
     entitlements:
-      - type: public_transport
+      - <<: *zet_bus_tram
         duration: 60min
-        traversed_zones: 1
-        region: Croatia
-        osm_tags: *zet_public_transport_network_osm_tags
     validate:
       type: in_vehicle
     receipt:
@@ -116,11 +103,8 @@ tickets:
       - *shop
       - *ticket_shop
     entitlements:
-      - type: public_transport
+      - <<: *zet_bus_tram
         duration: 90min
-        traversed_zones: 1
-        region: Croatia
-        osm_tags: *zet_public_transport_network_osm_tags
     validate:
       type: in_vehicle
     receipt:
@@ -142,9 +126,8 @@ tickets:
           - key: public_transport
             value: platform
     entitlements:
-      - type: public_transport
-        region: Croatia
-        osm_tags: *zet_funicular_osm_tags
+      - <<: *zet_funicular
+        multiuser: none
     validate:
       type: before_entrance
     receipt:
@@ -157,9 +140,9 @@ tickets:
     aquire:
       - *zet_funicular_stop
     entitlements:
-      - type: public_transport
-        region: Croatia
-        osm_tags: *zet_funicular_osm_tags
+      - <<: *zet_funicular
+        description: Uspinjača odmah kreće
+        multiuser: none
     validate:
       type: before_entrance
     receipt:

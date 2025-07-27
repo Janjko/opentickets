@@ -178,7 +178,7 @@ for yml_file in find_yml_files('./data'):
                 tags = ent.get('osm_tags')
                 if tags:
                     key = generate_osm_key(tags)
-                    name = "_".join(f"{k}-{v}" for k, v in key).replace(":", "_")
+                    id = "_".join(f"{k}-{v}" for k, v in key).replace(":", "_")
                     if key in entitlements_dict:
                         # append aquire names if not already present
                         existing = entitlements_dict[key].setdefault('aquire_names', [])
@@ -197,9 +197,10 @@ for yml_file in find_yml_files('./data'):
                         continue
 
                     query_url = build_overpass_query(tags)
-                    centroid = download_and_save_geojson(name, query_url, "./openticketsweb/data/entitlements")
+                    centroid = download_and_save_geojson(id, query_url, "./openticketsweb/data/entitlements")
                     entitlements_dict[key] = {
-                        'name': name,
+                        'id': id,
+                        'name': ent.get('name'),
                         'type': ent.get('type'),
                         'overpass_query': query_url,
                         'centroid': centroid,
@@ -217,15 +218,16 @@ features = []
 
 for key, props in entitlements_dict.items():
     centroid = props.get('centroid')
-    name = props.get('name')
+    id = props.get('id')
 
-    if not centroid or not name:
+    if not centroid or not id:
         continue  # Skip invalid entries
 
     feature = geojson.Feature(
         geometry=geojson.Point(centroid),
         properties={
-            "name": name,
+            "id": id,
+            'name': props.get("name"),
             "type": props.get("type"),
             "overpass_query": props.get("overpass_query"),
             "aquire_names": props.get("aquire_names"),
