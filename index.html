@@ -42,17 +42,45 @@
         }
         #sidebar {
           width: 100%;
+          height: 50vh;
+          flex: none;
+          overflow-y: auto;
         }
         #map {
           width: 100%;
-          flex: 50vh;
+          height: 50vh;
+          flex: none;
+        }
+        .container > div[style] {
+          height: 50vh !important;
         }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div id="map"></div>
+      <div style="position: relative; width: 100%; height: 100%">
+        <input
+          id="map-title"
+          type="text"
+          value="OpenTickets"
+          readonly
+          style="
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 6px 12px;
+            font-size: 18px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            min-width: 180px;
+          "
+        />
+        <div id="map"></div>
+      </div>
       <div id="sidebar">
         <h2>Entitlements</h2>
         <p>Click a point on the map to show details.</p>
@@ -124,6 +152,10 @@
         map.on("click", "entitlement-pins", (e) => {
           const feature = e.features[0];
           const name = feature.properties.id;
+          const displayName = feature.properties.name || name;
+          // Set textbox value to the name
+          document.getElementById("map-title").value = displayName;
+
           const shapePath = `data/entitlements/${name}.geojson`;
           const svgPath = `data/entitlements/${name}.svg`;
 
@@ -293,6 +325,9 @@
         // Reset SVG
         document.getElementById("entitlement-svg").src =
           "data/entitlements.svg";
+
+        // Reset textbox
+        document.getElementById("map-title").value = "OpenTickets";
       }
     </script>
   </body>
