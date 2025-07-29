@@ -146,6 +146,8 @@ for yml_file in find_yml_files('./data'):
             ticket_entry = {
                 "id": ticket_id,
                 "name": ticket_name,
+                "type": ticket.get('type'),
+                "price": ticket.get('price'),
                 "file": str(yml_file),
                 "aquire": ticket.get('aquire', []),
                 "entitlements": ticket.get('entitlements', []),

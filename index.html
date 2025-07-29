@@ -147,6 +147,15 @@
           }
         });
 
+        map.loadImage("images/building-store.png", (error, image) => {
+          if (error) {
+            console.error("Error loading parking image:", error);
+          } else {
+            map.addImage("building-store", image);
+            console.log("Building store image loaded successfully");
+          }
+        });
+
         map.addLayer({
           id: "entitlement-pins",
           type: "symbol",
@@ -200,6 +209,7 @@
                 .then((res) => res.json())
                 .then((data) => ({
                   name: data.name,
+                  price: data.price,
                   aquire: data.aquire.map((aquireItem) => ({
                     type: aquireItem.type,
                     name: aquireItem.name,
@@ -213,32 +223,42 @@
                 console.log(ticketData);
                 ticketList.innerHTML = `
       <h3>Tickets:</h3>
-      <table>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
         ${ticketData
           .map(
             (ticket, index) => `
-          <tr>
-            <td>
-              <h4>${ticket.name}</h4>
-              <table>
-                ${ticket.aquire
-                  .map(
-                    (aquireItem, aquireIndex) => `
-                  <tr>
-                    <td>${aquireItem.type}</td>
-                    <td>${aquireItem.name}</td>
-                    <td><a href="#" data-id="${aquireItem.id}">${aquireItem.id}</a></td>
-                  </tr>
-                `
-                  )
-                  .join("")}
-              </table>
-            </td>
-          </tr>
+          <div style="display: flex; flex-direction: column; border: 1px solid #eee; border-radius: 8px; padding: 12px; background: #fafafa;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: bold; font-size: 18px;">${
+                ticket.name
+              }</span>
+              <span style="font-size: 16px; color: #007bff;">${
+                ticket.price !== undefined ? ticket.price : ""
+              }</span>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap;">
+              ${ticket.aquire
+                .map((aquireItem, aquireIndex) => {
+                  let icon = "";
+                  if (
+                    ["shop", "ticket_shop", "ticket-shop"].includes(
+                      aquireItem.type
+                    )
+                  ) {
+                    icon = "images/building-store.svg";
+                  }
+                  // Add more icon logic here if needed
+                  return icon
+                    ? `<a href="#" data-id="${aquireItem.id}" title="${aquireItem.name}" style="display:inline-block; width:32px; height:32px;"><img src="${icon}" alt="${aquireItem.type}" style="width:100%;height:100%;object-fit:contain;vertical-align:middle;" /></a>`
+                    : `<a href="#" data-id="${aquireItem.id}" title="${aquireItem.name}" style="display:inline-block; width:32px; height:32px; background:#eee; border-radius:6px; text-align:center; line-height:32px; font-size:14px; color:#555;">${aquireItem.type}</a>`;
+                })
+                .join("")}
+            </div>
+          </div>
         `
           )
           .join("")}
-      </table>
+      </div>
     `;
 
                 // Add event listener to each aquire entry
@@ -277,6 +297,72 @@
                           console.error("Error fetching GeoJSON:", error)
                         );
                     }
+                  });
+                });
+
+                // Automatically show all aquire layers as if their icons were clicked, but only once per unique aquireId
+                const processedAquireIds = new Set();
+                ticketData.forEach((ticket) => {
+                  ticket.aquire.forEach((aquireItem) => {
+                    const aquireId = aquireItem.id;
+                    if (processedAquireIds.has(aquireId)) return;
+                    processedAquireIds.add(aquireId);
+                    const url = `./data/aquire/${aquireId}.geojson`;
+                    // Remove existing layer and source if present
+                    if (map.getLayer(`aquire-${aquireId}`)) {
+                      map.removeLayer(`aquire-${aquireId}`);
+                    }
+                    if (map.getSource(`aquire-${aquireId}`)) {
+                      map.removeSource(`aquire-${aquireId}`);
+                    }
+                    fetch(url)
+                      .then((response) => response.json())
+                      .then((geojson) => {
+                        // Check for shop=kiosk property in any feature
+                        let isKiosk = false;
+                        if (
+                          geojson &&
+                          geojson.features &&
+                          Array.isArray(geojson.features)
+                        ) {
+                          isKiosk = geojson.features.some(
+                            (f) =>
+                              f.properties &&
+                              f.properties.tags &&
+                              f.properties.tags.shop === "kiosk"
+                          );
+                        }
+                        // Add the source and layer
+                        map.addSource(`aquire-${aquireId}`, {
+                          type: "geojson",
+                          data: geojson,
+                        });
+                        if (isKiosk) {
+                          // Use symbol layer with building-store icon
+                          map.addLayer({
+                            id: `aquire-${aquireId}`,
+                            type: "symbol",
+                            source: `aquire-${aquireId}`,
+                            layout: {
+                              "icon-image": "building-store",
+                              "icon-size": 0.8,
+                            },
+                          });
+                        } else {
+                          map.addLayer({
+                            id: `aquire-${aquireId}`,
+                            type: "circle",
+                            source: `aquire-${aquireId}`,
+                            paint: {
+                              "circle-radius": 5,
+                              "circle-color": "#007bff",
+                            },
+                          });
+                        }
+                      })
+                      .catch((error) =>
+                        console.error("Error fetching GeoJSON:", error)
+                      );
                   });
                 });
               })

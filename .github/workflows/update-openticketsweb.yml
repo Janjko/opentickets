@@ -37,6 +37,7 @@ jobs:
       run: |
         sudo apt-get update && sudo apt-get install -y librsvg2-bin
         mkdir -p ./openticketsweb/images
+        rsvg-convert ./images/building-store.svg -o ./openticketsweb/images/building-store.png
         rsvg-convert ./images/bus-stop.svg -o ./openticketsweb/images/bus-stop.png
         rsvg-convert ./images/parking.svg -o ./openticketsweb/images/parking.png
     
