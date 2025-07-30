@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ticket Card Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f4f4f4;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 24px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 120px;
+        font-size: 15px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 16px;
+        resize: vertical;
+      }
+      button {
+        padding: 8px 18px;
+        font-size: 16px;
+        border-radius: 6px;
+        border: 1px solid #007bff;
+        background: #007bff;
+        color: #fff;
+        cursor: pointer;
+        margin-bottom: 18px;
+      }
+      .error {
+        color: #c00;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Paste Ticket JSON</h2>
+      <textarea
+        id="ticket-json"
+        placeholder="Paste ticket JSON here..."
+      ></textarea>
+      <button id="show-card">Show Card</button>
+      <div id="error" class="error"></div>
+      <div id="card-container"></div>
+    </div>
+    <script type="module">
+      import { createTicketCard } from "./ticketCard.js";
+
+      const btn = document.getElementById("show-card");
+      const textarea = document.getElementById("ticket-json");
+      const cardContainer = document.getElementById("card-container");
+      const errorDiv = document.getElementById("error");
+
+      btn.addEventListener("click", () => {
+        errorDiv.textContent = "";
+        cardContainer.innerHTML = "";
+        let ticket;
+        try {
+          ticket = JSON.parse(textarea.value);
+        } catch (e) {
+          errorDiv.textContent = "Invalid JSON!";
+          return;
+        }
+        const card = createTicketCard(ticket);
+        cardContainer.appendChild(card);
+      });
+    </script>
+  </body>
+</html>
