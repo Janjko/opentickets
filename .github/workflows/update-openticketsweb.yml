@@ -44,6 +44,7 @@ jobs:
     - name: Copy map site files to openticketsweb
       run: |
         cp index.html openticketsweb/
+        cp ticketCardDemo.html openticketsweb/
         cp -r styles openticketsweb/
         cp -r images openticketsweb/
         cp -r script openticketsweb/
