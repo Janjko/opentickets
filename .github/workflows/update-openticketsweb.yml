@@ -46,6 +46,7 @@ jobs:
         cp index.html openticketsweb/
         cp -r styles openticketsweb/
         cp -r images openticketsweb/
+        cp -r script openticketsweb/
 
     - name: Commit and push changes to openticketsweb
       run: |
