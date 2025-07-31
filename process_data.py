@@ -155,7 +155,7 @@ for yml_file in find_yml_files('./data'):
             }
 
             # If prepaid card, also include nested tickets
-            if ticket.get('type') == 'prepaid_card':
+            if ticket.get('tickets'):
                 ticket_entry["sub_tickets"] = ticket.get('tickets', [])
 
             # Save ticket to its own file

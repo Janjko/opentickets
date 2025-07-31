@@ -21,7 +21,7 @@ tickets:
           - key: operator:wikidata
             value: Q136060
     tickets:
-      - type: prepaid_card_ticket
+      - type: prepaid_ticket
         price: "€0.53"
         entitlements:
           - &zet_bus_tram
@@ -34,23 +34,23 @@ tickets:
             osm_tags: &zet_public_transport_network_osm_tags
               - key: network:wikidata
                 value: Q136060
-      - type: prepaid_card_ticket
+      - type: prepaid_ticket
         price: "€0.93"
         entitlements:
           - <<: *zet_bus_tram
             duration: 60min
-      - type: prepaid_card_ticket
+      - type: prepaid_ticket
         price: "€1.33"
         entitlements:
           - <<: *zet_bus_tram
             duration: 90min
             traversed_zones: 2
-      - type: prepaid_card_ticket
+      - type: prepaid_ticket
         price: "€3.98"
         entitlements:
           - <<: *zet_bus_tram
             duration: 1day
-      - type: prepaid_card_ticket
+      - type: prepaid_ticket
         price: "€0,66"
         entitlements:
           - &zet_funicular
@@ -68,7 +68,31 @@ tickets:
       type: in_vehicle
     receipt:
       type: prepaid_card
-      
+  - name: Aplikacija Moj ZET
+    type: mobile_phone_app
+    play_store_url: https://play.google.com/store/apps/details?id=com.zetmobile
+    mac_app_store_url: https://apps.apple.com/us/app/moj-zet/id6447687095
+    tickets:
+      - type: prepaid_ticket
+        price: "€0.53"
+        entitlements:
+          - <<: *zet_bus_tram
+            duration: 30min
+      - type: prepaid_ticket
+        price: "€0.93"
+        entitlements:
+          - <<: *zet_bus_tram
+            duration: 60min
+      - type: prepaid_ticket
+        price: "€3.98"
+        entitlements:
+          - <<: *zet_bus_tram
+            duration: 1day
+      - type: prepaid_ticket
+        price: "€0,66"
+        entitlements:
+          - <<: *zet_funicular
+
   - name: Papirnata karta 30 minuta
     type: paper_ticket
     price: "€0.53"
