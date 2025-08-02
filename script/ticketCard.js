@@ -55,36 +55,34 @@ export function createTicketCard(ticket) {
 
   // Aquire section with icons
   if (Array.isArray(ticket.aquire) && ticket.aquire.length > 0) {
-    const aquireSection = document.createElement("div");
-    aquireSection.style.marginTop = "8px";
-    aquireSection.innerHTML = "<b>Aquire:</b>";
-    const aquireList = document.createElement("div");
-    aquireList.style.display = "flex";
-    aquireList.style.gap = "10px";
+    const aquireDiv = document.createElement("div");
+    aquireDiv.className = "aquire-list";
     ticket.aquire.forEach((aquireItem) => {
-      const aquireDiv = document.createElement("div");
-      aquireDiv.style.display = "flex";
-      aquireDiv.style.alignItems = "center";
-      aquireDiv.style.gap = "6px";
-      aquireDiv.style.marginLeft = "12px";
-      // Icon for shop/ticket_shop
+      let icon = "";
       if (["shop", "ticket_shop", "ticket-shop"].includes(aquireItem.type)) {
-        const icon = document.createElement("img");
-        icon.src = "images/building-store.svg";
-        icon.alt = aquireItem.type;
-        icon.title = aquireItem.name;
-        icon.style.width = "24px";
-        icon.style.height = "24px";
-        aquireDiv.appendChild(icon);
+        icon = "images/building-store.svg";
       }
-      // Name only
-      const txt = document.createElement("span");
-      txt.textContent = aquireItem.name;
-      aquireDiv.appendChild(txt);
-      aquireList.appendChild(aquireDiv);
+      const link = document.createElement("a");
+      link.href = "#";
+      link.setAttribute("data-id", aquireItem.id);
+      link.title = aquireItem.name;
+      link.style.display = "inline-block";
+      link.style.width = "32px";
+      link.style.height = "32px";
+      if (icon) {
+        link.innerHTML = `<img src="${icon}" alt="${aquireItem.type}" style="width:100%;height:100%;object-fit:contain;vertical-align:middle;" />`;
+      } else {
+        link.textContent = aquireItem.type;
+        link.style.background = "#eee";
+        link.style.borderRadius = "6px";
+        link.style.textAlign = "center";
+        link.style.lineHeight = "32px";
+        link.style.fontSize = "14px";
+        link.style.color = "#555";
+      }
+      aquireDiv.appendChild(link);
     });
-    aquireSection.appendChild(aquireList);
-    card.appendChild(aquireSection);
+    card.appendChild(aquireDiv);
   }
 
   // Entitlements section with icons
@@ -95,6 +93,7 @@ export function createTicketCard(ticket) {
     const entList = document.createElement("div");
     entList.style.display = "flex";
     entList.style.gap = "10px";
+    // Entitlements section for main ticket
     ticket.entitlements.forEach((ent) => {
       const entDiv = document.createElement("div");
       entDiv.style.display = "flex";
@@ -110,6 +109,22 @@ export function createTicketCard(ticket) {
         icon.style.width = "24px";
         icon.style.height = "24px";
         entDiv.appendChild(icon);
+      }
+      // Stopwatch icon if duration exists
+      if (ent.duration) {
+        const stopwatch = document.createElement("img");
+        stopwatch.src = "images/stopwatch.svg";
+        stopwatch.title = ent.duration;
+        stopwatch.style.width = "20px";
+        stopwatch.style.height = "20px";
+        entDiv.appendChild(stopwatch);
+
+        // Add duration text next to the icon
+        const durationSpan = document.createElement("span");
+        durationSpan.textContent = ` ${ent.duration}`;
+        durationSpan.style.marginRight = "6px";
+        durationSpan.style.color = "#555";
+        entDiv.appendChild(durationSpan);
       }
       // Name and description only
       const txt = document.createElement("span");
@@ -169,6 +184,22 @@ export function createTicketCard(ticket) {
             icon.style.width = "24px";
             icon.style.height = "24px";
             entDiv.appendChild(icon);
+          }
+          // Stopwatch icon if duration exists
+          if (ent.duration) {
+            const stopwatch = document.createElement("img");
+            stopwatch.src = "images/stopwatch.svg";
+            stopwatch.title = ent.duration;
+            stopwatch.style.width = "20px";
+            stopwatch.style.height = "20px";
+            entDiv.appendChild(stopwatch);
+
+            // Add duration text next to the icon
+            const durationSpan = document.createElement("span");
+            durationSpan.textContent = ` ${ent.duration}`;
+            durationSpan.style.marginRight = "6px";
+            durationSpan.style.color = "#555";
+            entDiv.appendChild(durationSpan);
           }
           // Name and description only
           const txt = document.createElement("span");

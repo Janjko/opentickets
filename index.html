@@ -114,7 +114,9 @@
         />
       </div>
     </div>
-    <script>
+    <script type="module">
+      import { createTicketCard } from "./script/ticketCard.js";
+
       const map = new maplibregl.Map({
         container: "map",
         style: "styles/alidade_smooth.json",
@@ -183,13 +185,8 @@
           const feature = e.features[0];
           const name = feature.properties.id;
           const displayName = feature.properties.name || name;
-          // Set textbox value to the name
           document.getElementById("map-title").value = displayName;
 
-          const shapePath = `data/entitlements/${name}.geojson`;
-          const svgPath = `data/entitlements/${name}.svg`;
-
-          // Show ticket names in sidebar
           let tickets = feature.properties.ticket_ids;
           const ticketList = document.getElementById("ticket-list");
           if (typeof tickets === "string") {
@@ -205,63 +202,18 @@
             const ticketUrl = "./data/tickets/";
             const ticketPromises = tickets.map((ticketId) => {
               const url = `${ticketUrl}${ticketId}.json`;
-              return fetch(url)
-                .then((res) => res.json())
-                .then((data) => ({
-                  name: data.name,
-                  price: data.price,
-                  aquire: data.aquire.map((aquireItem) => ({
-                    type: aquireItem.type,
-                    name: aquireItem.name,
-                    id: aquireItem.id,
-                  })),
-                }));
+              return fetch(url).then((res) => res.json());
             });
 
             Promise.all(ticketPromises)
               .then((ticketData) => {
-                console.log(ticketData);
-                ticketList.innerHTML = `
-      <h3>Tickets:</h3>
-      <div style="display: flex; flex-direction: column; gap: 16px;">
-        ${ticketData
-          .map(
-            (ticket, index) => `
-          <div style="display: flex; flex-direction: column; border: 1px solid #eee; border-radius: 8px; padding: 12px; background: #fafafa;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-weight: bold; font-size: 18px;">${
-                ticket.name
-              }</span>
-              <span style="font-size: 16px; color: #007bff;">${
-                ticket.price !== undefined ? ticket.price : ""
-              }</span>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap;">
-              ${ticket.aquire
-                .map((aquireItem, aquireIndex) => {
-                  let icon = "";
-                  if (
-                    ["shop", "ticket_shop", "ticket-shop"].includes(
-                      aquireItem.type
-                    )
-                  ) {
-                    icon = "images/building-store.svg";
-                  }
-                  // Add more icon logic here if needed
-                  return icon
-                    ? `<a href="#" data-id="${aquireItem.id}" title="${aquireItem.name}" style="display:inline-block; width:32px; height:32px;"><img src="${icon}" alt="${aquireItem.type}" style="width:100%;height:100%;object-fit:contain;vertical-align:middle;" /></a>`
-                    : `<a href="#" data-id="${aquireItem.id}" title="${aquireItem.name}" style="display:inline-block; width:32px; height:32px; background:#eee; border-radius:6px; text-align:center; line-height:32px; font-size:14px; color:#555;">${aquireItem.type}</a>`;
-                })
-                .join("")}
-            </div>
-          </div>
-        `
-          )
-          .join("")}
-      </div>
-    `;
+                ticketList.innerHTML = "";
+                ticketData.forEach((ticket) => {
+                  const card = createTicketCard(ticket);
+                  ticketList.appendChild(card);
+                });
 
-                // Add event listener to each aquire entry
+                // Add event listeners to aquire icons/links inside the rendered cards
                 const aquireLinks = ticketList.querySelectorAll("a[data-id]");
                 aquireLinks.forEach((link) => {
                   link.addEventListener("click", (event) => {
@@ -269,96 +221,31 @@
                     const aquireId = link.getAttribute("data-id");
                     const url = `./data/aquire/${aquireId}.geojson`;
 
-                    // Check if layer already exists
-                    if (map.getLayer(`aquire-${aquireId}`)) {
-                      // Remove existing layer
-                      map.removeLayer(`aquire-${aquireId}`);
-                      map.removeSource(`aquire-${aquireId}`);
-                    } else {
-                      // Add new layer
-                      fetch(url)
-                        .then((response) => response.json())
-                        .then((geojson) => {
-                          map.addSource(`aquire-${aquireId}`, {
-                            type: "geojson",
-                            data: geojson,
-                          });
-                          map.addLayer({
-                            id: `aquire-${aquireId}`,
-                            type: "circle",
-                            source: `aquire-${aquireId}`,
-                            paint: {
-                              "circle-radius": 5,
-                              "circle-color": "#007bff",
-                            },
-                          });
-                        })
-                        .catch((error) =>
-                          console.error("Error fetching GeoJSON:", error)
-                        );
-                    }
-                  });
-                });
-
-                // Automatically show all aquire layers as if their icons were clicked, but only once per unique aquireId
-                const processedAquireIds = new Set();
-                ticketData.forEach((ticket) => {
-                  ticket.aquire.forEach((aquireItem) => {
-                    const aquireId = aquireItem.id;
-                    if (processedAquireIds.has(aquireId)) return;
-                    processedAquireIds.add(aquireId);
-                    const url = `./data/aquire/${aquireId}.geojson`;
-                    // Remove existing layer and source if present
+                    // Remove existing layer/source if present
                     if (map.getLayer(`aquire-${aquireId}`)) {
                       map.removeLayer(`aquire-${aquireId}`);
                     }
                     if (map.getSource(`aquire-${aquireId}`)) {
                       map.removeSource(`aquire-${aquireId}`);
                     }
+
+                    // Add new layer
                     fetch(url)
                       .then((response) => response.json())
                       .then((geojson) => {
-                        // Check for shop=kiosk property in any feature
-                        let isKiosk = false;
-                        if (
-                          geojson &&
-                          geojson.features &&
-                          Array.isArray(geojson.features)
-                        ) {
-                          isKiosk = geojson.features.some(
-                            (f) =>
-                              f.properties &&
-                              f.properties.tags &&
-                              f.properties.tags.shop === "kiosk"
-                          );
-                        }
-                        // Add the source and layer
                         map.addSource(`aquire-${aquireId}`, {
                           type: "geojson",
                           data: geojson,
                         });
-                        if (isKiosk) {
-                          // Use symbol layer with building-store icon
-                          map.addLayer({
-                            id: `aquire-${aquireId}`,
-                            type: "symbol",
-                            source: `aquire-${aquireId}`,
-                            layout: {
-                              "icon-image": "building-store",
-                              "icon-size": 0.8,
-                            },
-                          });
-                        } else {
-                          map.addLayer({
-                            id: `aquire-${aquireId}`,
-                            type: "circle",
-                            source: `aquire-${aquireId}`,
-                            paint: {
-                              "circle-radius": 5,
-                              "circle-color": "#007bff",
-                            },
-                          });
-                        }
+                        map.addLayer({
+                          id: `aquire-${aquireId}`,
+                          type: "circle",
+                          source: `aquire-${aquireId}`,
+                          paint: {
+                            "circle-radius": 5,
+                            "circle-color": "#007bff",
+                          },
+                        });
                       })
                       .catch((error) =>
                         console.error("Error fetching GeoJSON:", error)
@@ -372,6 +259,9 @@
           } else {
             ticketList.innerHTML = `<p><i>No ticket information available.</i></p>`;
           }
+
+          const shapePath = `data/entitlements/${name}.geojson`;
+          const svgPath = `data/entitlements/${name}.svg`;
 
           console.log(`Loading: ${shapePath}`);
 
@@ -410,8 +300,8 @@
         });
       });
 
-      function resetMap() {
-        document.getElementById("ticket-list").innerHTML = "";
+      window.resetMap = () => {
+        // Remove entitlement shape layer and source if present
         if (map.getLayer("entitlement-shape")) {
           map.removeLayer("entitlement-shape");
         }
@@ -419,23 +309,29 @@
           map.removeSource("entitlement-shape");
         }
 
-        map.getStyle().layers.forEach((layer) => {
-          if (layer.id.startsWith("aquire-")) {
-            map.removeLayer(layer.id);
-            map.removeSource(layer.id);
-          }
-        });
+        // Remove all aquire layers and sources
+        if (map.style && map.style._layers) {
+          Object.keys(map.style._layers).forEach((layerId) => {
+            if (layerId.startsWith("aquire-")) {
+              if (map.getLayer(layerId)) map.removeLayer(layerId);
+            }
+          });
+        }
+        if (map.style && map.style._sources) {
+          Object.keys(map.style._sources).forEach((sourceId) => {
+            if (sourceId.startsWith("aquire-")) {
+              if (map.getSource(sourceId)) map.removeSource(sourceId);
+            }
+          });
+        }
 
-        // Show pins again
+        // Show all pins
         map.setLayoutProperty("entitlement-pins", "visibility", "visible");
 
-        // Reset SVG
-        document.getElementById("entitlement-svg").src =
-          "data/entitlements.svg";
-
-        // Reset textbox
+        // Remove all tickets from sidebar
+        document.getElementById("ticket-list").innerHTML = "";
         document.getElementById("map-title").value = "OpenTickets";
-      }
+      };
     </script>
   </body>
 </html>
