@@ -1,0 +1,122 @@
+tickets:
+  - &autotrolej_ticket
+    name: Karta za poništavanje 1 zona
+    type: paper_ticket
+    issuer:wikidata: Q12627396
+    price: "2.50 EUR"
+    image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
+    aquire:
+      - &tisak
+        type: shop
+        name: "Tisak"
+        osm_tags:
+          - key: shop
+            value: kiosk
+          - key: brand:wikidata
+            value: Q12643627
+      - &inovine
+        type: shop
+        name: "iNovine"
+        osm_tags:
+          - key: shop
+            value: kiosk
+          - key: brand:wikidata
+            value: Q115137198
+      - &ticket_shop
+        type: ticket_shop
+        name: "Prodajna mjesta ZET-a"
+        osm_tags:
+          - key: shop
+            value: ticket
+          - key: operator:wikidata
+            value: Q12627396
+    entitlements:
+      - &autotrolej_bus
+        name: Autotrolej bus
+        type: public_transport
+        trips: 1
+        traversed_zones: 1
+        region: Croatia
+        osm_tags: &autotrolej_public_transport_network_osm_tags
+          - key: network:wikidata
+            value: Q12627396
+  - <<: *autotrolej_ticket
+    name: Karta za jedno poništavanje 2 zone
+    price: "3.00 EUR"
+    entitlements:
+      - <<: *autotrolej_bus
+        traversed_zones: 2
+  - <<: *autotrolej_ticket
+    name: Karta za jedno poništavanja 3 zone
+    price: "3.50 EUR"
+    entitlements:
+      - <<: *autotrolej_bus
+        traversed_zones: 3
+  - <<: *autotrolej_ticket
+    name: Karta za jedno poništavanja 4 zone
+    price: "4.00 EUR"
+    entitlements:
+      - <<: *autotrolej_bus
+        traversed_zones: 4
+  - <<: *autotrolej_ticket
+    name: Karta za dva poništavanja 1 zona
+    price: "2.80 EUR"
+    entitlements:
+      - <<: *autotrolej_bus
+        traversed_zones: 2
+        trips: 2
+  - <<: *autotrolej_ticket
+    name: Karta za dva poništavanja 2 zone
+    price: "3.70 EUR"
+    entitlements:
+      - <<: *autotrolej_bus
+        traversed_zones: 3
+        trips: 2
+  - <<: *autotrolej_ticket
+    name: Karta za dva poništavanja 3 zone
+    price: "4.60 EUR"
+    entitlements:
+      - <<: *autotrolej_bus
+        traversed_zones: 3
+        trips: 2
+  - <<: *autotrolej_ticket
+    name: Karta za dva poništavanja 4 zone
+    price: "5.20 EUR"
+    entitlements:
+      - <<: *autotrolej_bus
+        traversed_zones: 4
+        trips: 2
+  - <<: *autotrolej_ticket
+    name: Dnevna karta
+    price: "3.19 EUR"
+    entitlements:
+      - <<: *autotrolej_bus
+        traversed_zones: 1
+        duration: 24hour
+        duration_stops_at_last_midnight: true
+        trips: none
+    name: Dnevna karta 4 zone
+    price: "3.19 EUR"
+    entitlements:
+      - <<: *autotrolej_bus
+        traversed_zones: 4
+        duration: 24hour
+        duration_stops_at_last_midnight: true
+        trips: none
+    name: Tjedna karta
+    price: "3.19 EUR"
+    entitlements:
+      - <<: *autotrolej_bus
+        traversed_zones: 1
+        duration: 7day
+        duration_stops_at_last_midnight: true
+        trips: none
+    name: Tjedna karta 4 zone
+    price: "3.19 EUR"
+    entitlements:
+      - <<: *autotrolej_bus
+        traversed_zones: 4
+        duration: 7day
+        duration_stops_at_last_midnight: true
+        trips: none
+      

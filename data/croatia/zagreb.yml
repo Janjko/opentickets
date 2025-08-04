@@ -1,8 +1,9 @@
 tickets:
   - name: Vrijednosna karta
     type: prepaid_card
+    issuer:wikidata: Q136060
     image_url: https://www.zet.hr/UserDocsImages/Usluge/vrijednosna%20karta.jpg
-    price: "€1.33"
+    price: "1.33 EUR"
     aquire:
       - &shop
         type: shop
@@ -22,7 +23,7 @@ tickets:
             value: Q136060
     tickets:
       - type: prepaid_ticket
-        price: "€0.53"
+        price: "0.53 EUR"
         entitlements:
           - &zet_bus_tram
             name: ZET bus i tramvaj
@@ -35,23 +36,23 @@ tickets:
               - key: network:wikidata
                 value: Q136060
       - type: prepaid_ticket
-        price: "€0.93"
+        price: "0.93 EUR"
         entitlements:
           - <<: *zet_bus_tram
             duration: 60min
       - type: prepaid_ticket
-        price: "€1.33"
+        price: "1.33 EUR"
         entitlements:
           - <<: *zet_bus_tram
             duration: 90min
             traversed_zones: 2
       - type: prepaid_ticket
-        price: "€3.98"
+        price: "3.98 EUR"
         entitlements:
           - <<: *zet_bus_tram
             duration: 1day
       - type: prepaid_ticket
-        price: "€0,66"
+        price: "0,66 EUR"
         entitlements:
           - &zet_funicular
             type: public_transport
@@ -74,28 +75,29 @@ tickets:
     mac_app_store_url: https://apps.apple.com/us/app/moj-zet/id6447687095
     tickets:
       - type: prepaid_ticket
-        price: "€0.53"
+        price: "0.53 EUR"
         entitlements:
           - <<: *zet_bus_tram
             duration: 30min
       - type: prepaid_ticket
-        price: "€0.93"
+        price: "0.93 EUR"
         entitlements:
           - <<: *zet_bus_tram
             duration: 60min
       - type: prepaid_ticket
-        price: "€3.98"
+        price: "3.98 EUR"
         entitlements:
           - <<: *zet_bus_tram
             duration: 1day
       - type: prepaid_ticket
-        price: "€0,66"
+        price: "0,66 EUR"
         entitlements:
           - <<: *zet_funicular
 
   - name: Papirnata karta 30 minuta
     type: paper_ticket
-    price: "€0.53"
+    issuer:wikidata: Q136060
+    price: "0.53 EUR"
     image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
     aquire:
       - *shop
@@ -106,7 +108,8 @@ tickets:
 
   - name: Papirnata karta 60 minuta
     type: paper_ticket
-    price: "€0.93"
+    issuer:wikidata: Q136060
+    price: "0.93 EUR"
     image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
     aquire:
       - *shop
@@ -121,7 +124,8 @@ tickets:
 
   - name: Papirnata karta 90 minuta
     type: paper_ticket
-    price: "€1.33"
+    issuer:wikidata: Q136060
+    price: "1.33 EUR"
     image_url: https://www.poslovni.hr/wp-content/uploads/2022/12/PXL_010718_21183647-1600x1000.jpg
     aquire:
       - *shop
@@ -136,7 +140,8 @@ tickets:
 
   - name: Karta za uspinjaču - jednosmjerna
     type: paper_ticket
-    price: "€0.66"
+    issuer:wikidata: Q136060
+    price: "0.66 EUR"
     image_url: https://www.crosport.hr/wp-content/uploads/2018/10/Uspinja%C4%8Da-758x380.jpg
     aquire:
       - &zet_funicular_stop
@@ -159,7 +164,8 @@ tickets:
 
   - name: Karta za hitnu vožnju
     type: paper_ticket
-    price: "€3.32"
+    issuer:wikidata: Q136060
+    price: "3.32 EUR"
     image_url: https://www.crosport.hr/wp-content/uploads/2018/10/Uspinja%C4%8Da-758x380.jpg
     aquire:
       - *zet_funicular_stop
